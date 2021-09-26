@@ -2,3 +2,16 @@
 *.log
 *.str
 project/
+NA/
+.Xil/
+
+#Ignore everything in the ip/ directory
+sources/ip/*
+#Except directories in ip/
+!sources/ip/*/
+#But ignore all sub-directories of sub-directories in ip/
+sources/ip/*/**/
+#Also ignore all files in sub-directories of ip/
+sources/ip/*/*
+#Except for files ending in .xci (the main IP config file)
+!sources/ip/*/*.xci

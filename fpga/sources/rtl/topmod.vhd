@@ -30,14 +30,21 @@ entity topmod is
         ext_i           :   in  std_logic_vector(7 downto 0);
         ext_o           :   out std_logic_vector(7 downto 0);
         --
+        -- PLL outputs
+        --
+        pll_hi_o        :   out std_logic;
+        pll_lo_o        :   out std_logic;
+        --
         -- ADC data
         --
-        adcData_i       :   in  std_logic_vector(31 downto 0)
+        adcData_i       :   in  std_logic_vector(31 downto 0);
         --
         -- DAC data
         --
---        m_axis_tdata    :   out std_logic_vector(31 downto 0);
---        m_axis_tvalid   :   out std_logic
+        dac_a_o         :   out std_logic_vector(DAC_WIDTH - 1 downto 0);
+        dac_b_o         :   out std_logic_vector(DAC_WIDTH - 1 downto 0);
+        dac_reset_o     :   out std_logic
+        
     );
 end topmod;
 
@@ -66,10 +73,16 @@ signal regs :   t_param_reg_array(3 downto 0);
 
 begin
 --
+-- PLL outputs
+--
+pll_hi_o <= '0';
+pll_lo_o <= '1';
+--
 -- DAC Outputs
 --
---m_axis_tdata <= (others => '0');
---m_axis_tvalid <= '1';
+dac_a_o <= not(std_logic_vector(resize(signed(regs(1)(15 downto 0)),dac_a_o'length)));
+dac_b_o <= not(std_logic_vector(resize(signed(regs(1)(31 downto 16)),dac_b_o'length)));
+dac_reset_o <= not(aresetn);
 ext_o <= regs(0)(7 downto 0);
 
 --

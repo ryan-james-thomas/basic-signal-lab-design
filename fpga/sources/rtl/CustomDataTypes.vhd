@@ -23,7 +23,7 @@ type t_adc_array is array(NUM_ADCS - 1 downto 0) of t_adc;
 --
 -- Define DAC data types
 --
-constant DAC_WIDTH          :   natural :=  16;
+constant DAC_WIDTH          :   natural :=  14;
 constant NUM_DACS           :   natural :=  2;
 subtype t_dac is signed(DAC_WIDTH-1 downto 0);
 type t_dac_array is array(NUM_DACS - 1 downto 0) of t_dac;
