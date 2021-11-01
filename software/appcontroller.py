@@ -19,6 +19,8 @@ def write(data,header):
             cmd = ['./setGain','-o','-p',format(header['port']),'-v',format(header['value'])]
         elif header["mode"] == "set input gain":
             cmd = ['./setGain','-i','-p',format(header['port']),'-v',format(header['value'])]
+        elif header["mode"] == "set coupling":
+            cmd = ['./setGain','-c','-p',format(header['port']),'-v',format(header['value'])]
         elif header["mode"] == "fetch data":
             cmd = ['./fetchData',format(header["numFetch"]),format(header["fetchType"])]
         elif header["mode"] == "acquire phase":

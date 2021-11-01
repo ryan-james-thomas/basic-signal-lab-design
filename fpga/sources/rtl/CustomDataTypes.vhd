@@ -143,10 +143,63 @@ end record t_module_status;
 constant INIT_MODULE_STATUS     :   t_module_status :=  (started    =>  '0',
                                                          running    =>  '0',
                                                          done       =>  '0');
+
+--
+-- This procedure creates an output signal that is synchronous
+-- with a given clock signal
+--
+procedure trig_sync(
+    signal clk      :   in std_logic;
+    signal aresetn  :   in  std_logic;
+    signal trig_i   :   in  std_logic;
+    signal sync_o   :   inout std_logic_vector(1 downto 0));
+    
+procedure rising_sync(
+    signal clk      :   in  std_logic;
+    signal aresetn  :   in  std_logic;
+    signal trig_i   :   in  std_logic;
+    signal sync_o   :   out std_logic);
+
 end CustomDataTypes;
 
 --------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------
 package body CustomDataTypes is
+
+procedure trig_sync(
+    signal clk      :   in std_logic;
+    signal aresetn  :   in  std_logic;
+    signal trig_i   :   in  std_logic;
+    signal sync_o   :   inout std_logic_vector(1 downto 0)) is
+
+begin
+    if aresetn = '0' then
+        sync_o <= (others => '0');
+    elsif rising_edge(clk) then
+        sync_o <= sync_o(0) & trig_i;
+    end if;
+end trig_sync;
+
+procedure rising_sync(
+    signal clk      :   in  std_logic;
+    signal aresetn  :   in  std_logic;
+    signal trig_i   :   in  std_logic;
+    signal sync_o   :   out std_logic) is
+
+variable sync :   std_logic_vector(1 downto 0);
+
+begin
+    if aresetn = '0' then
+        sync := (others => '0');
+    elsif rising_edge(clk) then
+        sync := sync(0) & trig_i;
+        if sync = "01" then
+            sync_o <= '1';
+        else
+            sync_o <= '0';
+        end if;
+    end if;
+    
+end rising_sync;
 
 end CustomDataTypes;

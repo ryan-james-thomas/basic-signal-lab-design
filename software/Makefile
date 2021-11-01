@@ -6,7 +6,7 @@ LDFLAGS = -L/opt/redpitaya/lib
 LDLIBS =  -lpthread -lrp -lm
 
 ifeq ($(MODEL),Z20_250_12)
-INCLUDE += -I/opt/redpitaya/include/api250-12
+CFLAGS += -I/opt/redpitaya/include/api250-12
 LDLIBS += -lrp-gpio -lrp-i2c
 endif
 

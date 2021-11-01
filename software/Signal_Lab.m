@@ -2,19 +2,22 @@ classdef Signal_Lab < handle
     properties
         t
         data
-        
-        outputGains
-        inputGains
     end
     
     properties(SetAccess = immutable)
         conn        %ConnectionClient object for communicating with device
         %
+        % IO Setttings
+        %
+        settings
+        %
         % Top-level properties
         %
         leds        %LED outputs
         dac         %2-channel DAC outputs
-        
+        freq        %2-element frequency settings for DDSs
+        usedds      %Set to 0 to use DDS, 1 to use manual DAC
+        adc         %2-channel ADC inputs
     end
     
     properties(SetAccess = protected)
@@ -22,52 +25,72 @@ classdef Signal_Lab < handle
         % R/W registers
         %
         regs                %4 element registers
-
+        adcreg
     end
     
     properties(Constant)
         CLK = 250e6;                    %Clock frequency of the board
         HOST_ADDRESS = '';              %Default socket server address
         DAC_WIDTH = 14;                 %DAC width
+        ADC_WIDTH = 12;                 %ADC width
     end
     
     methods
         function self = Signal_Lab(varargin)
-            if numel(varargin)==1
+            if numel(varargin) == 1
                 self.conn = ConnectionClient(varargin{1});
             else
                 self.conn = ConnectionClient(self.HOST_ADDRESS);
             end
+            
+            self.settings = IOSettings(self);
             
             % R/W registers
             self.regs = DeviceRegister.empty;
             for nn = 1:4
                 self.regs(nn) = DeviceRegister((nn - 1)*4,self.conn);
             end
+            self.adcreg = DeviceRegister('10',self.conn);
             %
             % Parameters
             %
             self.leds = DeviceParameter([0,7],self.regs(1))...
                 .setLimits('lower',0,'upper',255)...
                 .setFunctions('to',@(x) x,'from',@(x) x);
+            self.usedds = DeviceParameter([8,8],self.regs(1))...
+                .setLimits('lower',0,'from',1);
+            self.usedds(2) = DeviceParameter([9,9],self.regs(1))...
+                .setLimits('lower',0,'from',1);
             self.dac = DeviceParameter([0,15],self.regs(2),'int16')...
                 .setLimits('lower',-10,'upper',10)...
                 .setFunctions('to',@(x) self.convertDAC(x,'int',1),'from',@(x) self.convertDAC(x,'volt',1));
             self.dac(2) = DeviceParameter([16,31],self.regs(2),'int16')...
                 .setLimits('lower',-10,'upper',10)...
                 .setFunctions('to',@(x) self.convertDAC(x,'int',2),'from',@(x) self.convertDAC(x,'volt',2));
+            self.freq = DeviceParameter([0,31],self.regs(3))...
+                .setLimits('lower',0,'upper',60e6)...
+                .setFunctions('to',@(x) x/self.CLK*2^32,'from',@(x) x/2^32*self.CLK);
+            self.freq(2) = DeviceParameter([0,31],self.regs(4))...
+                .setLimits('lower',0,'upper',60e6)...
+                .setFunctions('to',@(x) x/self.CLK*2^32,'from',@(x) x/2^32*self.CLK);
             
-            self.outputGains = [1,1];
-            self.inputGains = [1,1];
+            self.adc = DeviceParameter([0,15],self.adcreg,'int16')...
+                .setFunctions('from',@(x) self.convertADC(x,'volt',1));
+            self.adc(2) = DeviceParameter([16,31],self.adcreg,'int16')...
+                .setFunctions('from',@(x) self.convertADC(x,'volt',1));
+
         end
         
         function self = setDefaults(self,varargin)
             self.leds.set(0);
+            self.usedds(1).set(0);
+            self.usedds(2).set(0);
             self.dac(1).set(0);
             self.dac(2).set(0);
+            self.freq(1).set(1e6);
+            self.freq(2).set(1e6);
             
-            self.outputGains = [1,1];
-            self.inputGains = [1,1];
+            self.settings.setDefaults;
         end
         
         function self = check(self)
@@ -75,42 +98,48 @@ classdef Signal_Lab < handle
         end
         
         function r = convertDAC(self,v,direction,ch)
+            g = (self.settings.convert_gain(ch) == 0)*1 + (self.settings.convert_gain(ch) == 1)*5;
             if strcmpi(direction,'int')
-                r = v/(self.outputGains(ch)*2)*(2^(self.DAC_WIDTH - 1) - 1);
+                r = v/(g*2)*(2^(self.DAC_WIDTH - 1) - 1);
             elseif strcmpi(direction,'volt')
-                r = (self.outputGains(ch)*2)*v/(2^(self.DAC_WIDTH - 1) - 1);
+                r = (g*2)*v/(2^(self.DAC_WIDTH - 1) - 1);
             end
         end
         
-        function self = setGains(self,gains)
-            if nargin >= 2
-                self.outputGains = gains;
-            end
-            
-            g = (self.outputGains == 1)*0 + (self.outputGains == 5)*1;
-            for nn = 1:numel(self.outputGains)
-                self.conn.write(0,'mode','set output gain','port',nn,'value',g(nn));
-            end
-            
-            for nn = 1:numel(self.inputGains)
-                self.conn.write(0,'mode','set input gain','port',nn,'value',self.inputGains(nn));
+        function r = convertADC(self,v,direction,ch)
+            g = (self.settings.convert_attenuation(ch) == 0)*1.1 + (self.settings.convert_attenuation(ch) == 1)*20;
+            if strcmpi(direction,'int')
+                r = v/(g)*(2^(self.ADC_WIDTH + 1) - 1);
+            elseif strcmpi(direction,'volt')
+                r = (g)*v/(2^(self.ADC_WIDTH  + 1) - 1);
             end
         end
         
         function self = upload(self)
             self.check;
-            self.setGains;
+            self.settings.write;
             self.regs.write;
         end
         
         function self = fetch(self)
             %Read registers
             self.regs.read;
-            
+            self.adcreg.read;
             %Read parameters
             self.leds.get;
+            self.usedds(1).get;
+            self.usedds(2).get;
             self.dac(1).get;
             self.dac(2).get;
+            self.freq(1).get;
+            self.freq(2).get;
+            self.adc(1).get;
+            self.adc(2).get;
+        end
+        
+        function self = resetdelay(self)
+            self.regs(1).set(1,[10,10]).write;
+            self.regs(1).set(0,[10,10]).write;
         end
         
         function self = getPhaseData(self,numSamples,saveFlags,startFlag,saveType)
@@ -139,16 +168,22 @@ classdef Signal_Lab < handle
         function disp(self)
             strwidth = 20;
             fprintf(1,'Signal_Lab object with properties:\n');
-            fprintf(1,'% 5sOutput gains: [%d,%d]\n',' ',self.outputGains);
-            fprintf(1,'% 5s Input gains: [%d,%d]\n',' ',self.inputGains);
+            self.settings.print(strwidth);
             fprintf(1,'% 5s~~~~~~~~~~~~~~~~~~~~~~~~~\n',' ');
             fprintf(1,'\t Registers\n');
             for nn = 1:numel(self.regs)
                 self.regs(nn).print(sprintf('Register %d',nn),strwidth);
             end
+            self.adcreg.print('ADC Register',strwidth);
             self.leds.print('LEDs',strwidth,'%08x');
+            self.usedds(1).print('Use DDS 1',strwidth,'%d');
+            self.usedds(2).print('Use DDS 2',strwidth,'%d');
             self.dac(1).print('DAC 1',strwidth,'%.3f','V');
-            self.dac(2).print('DAC 1',strwidth,'%.3f','V');          
+            self.dac(2).print('DAC 2',strwidth,'%.3f','V');          
+            self.freq(1).print('Frequency 1',strwidth,'%.3e','MHz');
+            self.freq(2).print('Frequency 2',strwidth,'%.3e','MHz');
+            self.adc(1).print('ADC 1',strwidth,'%.3f','V');
+            self.adc(2).print('ADC 2',strwidth,'%.3f','V');   
         end
         
         

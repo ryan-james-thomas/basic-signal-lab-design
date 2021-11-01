@@ -15,47 +15,50 @@
 ### ADC
 
 # ADC data
-set_property IOSTANDARD DIFF_SSTL18_II [get_ports {adc_dat_?_i[*][*]}]
-set_property IOB TRUE [get_ports {adc_dat_?_i[*][*]}]
+set_property IOSTANDARD DIFF_SSTL18_II [get_ports {adc_dat_a_?_i[*]}]
+set_property IOB TRUE [get_ports {adc_dat_a_?_i[*]}]
+
+set_property IOSTANDARD DIFF_SSTL18_II [get_ports {adc_dat_b_?_i[*]}]
+set_property IOB TRUE [get_ports {adc_dat_b_?_i[*]}]
 #set_property DIFF_TERM TRUE [get_ports {adc_dat_?_i[*][*]}]
 
 # ADC 0 data
-set_property PACKAGE_PIN W18 [get_ports {adc_dat_p_i[0][0]}] ; # ADAxP
-set_property PACKAGE_PIN W19 [get_ports {adc_dat_n_i[0][0]}] ; # ADAxN
-set_property PACKAGE_PIN Y16 [get_ports {adc_dat_p_i[0][1]}] ; # ADA0P
-set_property PACKAGE_PIN Y17 [get_ports {adc_dat_n_i[0][1]}] ; # ADA0N
-set_property PACKAGE_PIN V12 [get_ports {adc_dat_p_i[0][2]}] ; # ADA2P
-set_property PACKAGE_PIN W13 [get_ports {adc_dat_n_i[0][2]}] ; # ADA2N
-set_property PACKAGE_PIN T11 [get_ports {adc_dat_p_i[0][3]}] ; # ADA4P
-set_property PACKAGE_PIN T10 [get_ports {adc_dat_n_i[0][3]}] ; # ADA4N
-set_property PACKAGE_PIN W14 [get_ports {adc_dat_p_i[0][4]}] ; # ADA6P
-set_property PACKAGE_PIN Y14 [get_ports {adc_dat_n_i[0][4]}] ; # ADA6N
-set_property PACKAGE_PIN V16 [get_ports {adc_dat_p_i[0][5]}] ; # ADA8P
-set_property PACKAGE_PIN W16 [get_ports {adc_dat_n_i[0][5]}] ; # ADA8N
-set_property PACKAGE_PIN T20 [get_ports {adc_dat_p_i[0][6]}] ; # ADA10P
-set_property PACKAGE_PIN U20 [get_ports {adc_dat_n_i[0][6]}] ; # ADA10N
+set_property PACKAGE_PIN W18 [get_ports {adc_dat_a_p_i[0]}] ; # ADAxP
+set_property PACKAGE_PIN W19 [get_ports {adc_dat_a_n_i[0]}] ; # ADAxN
+set_property PACKAGE_PIN Y16 [get_ports {adc_dat_a_p_i[1]}] ; # ADA0P
+set_property PACKAGE_PIN Y17 [get_ports {adc_dat_a_n_i[1]}] ; # ADA0N
+set_property PACKAGE_PIN V12 [get_ports {adc_dat_a_p_i[2]}] ; # ADA2P
+set_property PACKAGE_PIN W13 [get_ports {adc_dat_a_n_i[2]}] ; # ADA2N
+set_property PACKAGE_PIN T11 [get_ports {adc_dat_a_p_i[3]}] ; # ADA4P
+set_property PACKAGE_PIN T10 [get_ports {adc_dat_a_n_i[3]}] ; # ADA4N
+set_property PACKAGE_PIN W14 [get_ports {adc_dat_a_p_i[4]}] ; # ADA6P
+set_property PACKAGE_PIN Y14 [get_ports {adc_dat_a_n_i[4]}] ; # ADA6N
+set_property PACKAGE_PIN V16 [get_ports {adc_dat_a_p_i[5]}] ; # ADA8P
+set_property PACKAGE_PIN W16 [get_ports {adc_dat_a_n_i[5]}] ; # ADA8N
+set_property PACKAGE_PIN T20 [get_ports {adc_dat_a_p_i[6]}] ; # ADA10P
+set_property PACKAGE_PIN U20 [get_ports {adc_dat_a_n_i[6]}] ; # ADA10N
 
 # ADC 1 data
-set_property PACKAGE_PIN N17 [get_ports {adc_dat_p_i[1][0]}] ; # ADBxP
-set_property PACKAGE_PIN P18 [get_ports {adc_dat_n_i[1][0]}] ; # ADBxN
-set_property PACKAGE_PIN T17 [get_ports {adc_dat_p_i[1][1]}] ; # ADB0P
-set_property PACKAGE_PIN R18 [get_ports {adc_dat_n_i[1][1]}] ; # ADB0N
-set_property PACKAGE_PIN T16 [get_ports {adc_dat_p_i[1][2]}] ; # ADB2P
-set_property PACKAGE_PIN U17 [get_ports {adc_dat_n_i[1][2]}] ; # ADB2N
-set_property PACKAGE_PIN V20 [get_ports {adc_dat_p_i[1][3]}] ; # ADB4P
-set_property PACKAGE_PIN W20 [get_ports {adc_dat_n_i[1][3]}] ; # ADB4N
-set_property PACKAGE_PIN Y18 [get_ports {adc_dat_p_i[1][4]}] ; # ADB6P
-set_property PACKAGE_PIN Y19 [get_ports {adc_dat_n_i[1][4]}] ; # ADB6N
-set_property PACKAGE_PIN T14 [get_ports {adc_dat_p_i[1][5]}] ; # ADB8P
-set_property PACKAGE_PIN T15 [get_ports {adc_dat_n_i[1][5]}] ; # ADB8N
-set_property PACKAGE_PIN V15 [get_ports {adc_dat_p_i[1][6]}] ; # ADB10P
-set_property PACKAGE_PIN W15 [get_ports {adc_dat_n_i[1][6]}] ; # ADB10N
+set_property PACKAGE_PIN N17 [get_ports {adc_dat_b_p_i[0]}] ; # ADBxP
+set_property PACKAGE_PIN P18 [get_ports {adc_dat_b_n_i[0]}] ; # ADBxN
+set_property PACKAGE_PIN T17 [get_ports {adc_dat_b_p_i[1]}] ; # ADB0P
+set_property PACKAGE_PIN R18 [get_ports {adc_dat_b_n_i[1]}] ; # ADB0N
+set_property PACKAGE_PIN T16 [get_ports {adc_dat_b_p_i[2]}] ; # ADB2P
+set_property PACKAGE_PIN U17 [get_ports {adc_dat_b_n_i[2]}] ; # ADB2N
+set_property PACKAGE_PIN V20 [get_ports {adc_dat_b_p_i[3]}] ; # ADB4P
+set_property PACKAGE_PIN W20 [get_ports {adc_dat_b_n_i[3]}] ; # ADB4N
+set_property PACKAGE_PIN Y18 [get_ports {adc_dat_b_p_i[4]}] ; # ADB6P
+set_property PACKAGE_PIN Y19 [get_ports {adc_dat_b_n_i[4]}] ; # ADB6N
+set_property PACKAGE_PIN T14 [get_ports {adc_dat_b_p_i[5]}] ; # ADB8P
+set_property PACKAGE_PIN T15 [get_ports {adc_dat_b_n_i[5]}] ; # ADB8N
+set_property PACKAGE_PIN V15 [get_ports {adc_dat_b_p_i[6]}] ; # ADB10P
+set_property PACKAGE_PIN W15 [get_ports {adc_dat_b_n_i[6]}] ; # ADB10N
 
 
-set_property IOSTANDARD DIFF_SSTL18_II [get_ports {adc_clk_i[*]}]
+set_property IOSTANDARD DIFF_SSTL18_II [get_ports {adc_clk_?_i}]
 #set_property DIFF_TERM TRUE [get_ports {adc_clk_i[*]}]
-set_property PACKAGE_PIN U18 [get_ports {adc_clk_i[1]}] ; # ADCLKP
-set_property PACKAGE_PIN U19 [get_ports {adc_clk_i[0]}] ; # ADCLKN
+set_property PACKAGE_PIN U18 [get_ports {adc_clk_p_i}] ; # ADCLKP
+set_property PACKAGE_PIN U19 [get_ports {adc_clk_n_i}] ; # ADCLKN
 
 # ADC SPI
 set_property IOSTANDARD LVCMOS18 [get_ports adc_spi_*]
@@ -253,7 +256,7 @@ set_property PACKAGE_PIN N15 [get_ports {led_o[7]}]
 # Clock constraints                                                        #
 ############################################################################
 
-create_clock -period 4.000 -name adc_clk [get_ports {adc_clk_i[1]}]
+create_clock -period 4.000 -name adc_clk_250 [get_ports {adc_clk_p_i}]
 create_clock -period 4.000 -name dco_clk [get_ports dac_dco_i]
 create_clock -period 100.000 -name pll_ref_i -waveform {0.000 50.000} [get_ports pll_ref_i]
 create_clock -period 4.000 -name rx_clk [get_ports {daisy_p_i[1]}]
@@ -271,22 +274,22 @@ set_false_path -from [get_clocks pll_adc_clk2d] -to [get_clocks pll_pwm_clk]
 set_false_path -from [get_clocks pll_adc_10mhz] -to [get_clocks pll_adc_clk2d]
 
 
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_n_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_n_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -min -add_delay -1.000 [get_ports {adc_dat_n_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -max -add_delay -0.400 [get_ports {adc_dat_n_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_n_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_n_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -min -add_delay -1.000 [get_ports {adc_dat_n_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -max -add_delay -0.400 [get_ports {adc_dat_n_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_p_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_p_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -min -add_delay -1.000 [get_ports {adc_dat_p_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -max -add_delay -0.400 [get_ports {adc_dat_p_i[0][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_p_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_p_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -min -add_delay -1.000 [get_ports {adc_dat_p_i[1][*]}]
-set_input_delay -clock [get_clocks adc_clk] -max -add_delay -0.400 [get_ports {adc_dat_p_i[1][*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_a_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_a_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -min -add_delay -1.000 [get_ports {adc_dat_a_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -max -add_delay -0.400 [get_ports {adc_dat_a_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_b_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_b_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -min -add_delay -1.000 [get_ports {adc_dat_b_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -max -add_delay -0.400 [get_ports {adc_dat_b_n_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_a_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_a_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -min -add_delay -1.000 [get_ports {adc_dat_a_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -max -add_delay -0.400 [get_ports {adc_dat_a_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -min -add_delay -1.000 [get_ports {adc_dat_b_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -clock_fall -max -add_delay -0.400 [get_ports {adc_dat_b_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -min -add_delay -1.000 [get_ports {adc_dat_b_p_i[*]}]
+set_input_delay -clock [get_clocks adc_clk_250] -max -add_delay -0.400 [get_ports {adc_dat_b_p_i[*]}]
 
 
 
