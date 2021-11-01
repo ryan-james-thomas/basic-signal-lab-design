@@ -2459,10 +2459,10 @@
           }
         },
         "interface_nets": {
-          "Conn1": {
+          "Conn2": {
             "interface_ports": [
-              "DDR",
-              "processing_system7/DDR"
+              "FIXED_IO",
+              "processing_system7/FIXED_IO"
             ]
           },
           "processing_system7_M_AXI_GP0": {
@@ -2477,10 +2477,10 @@
               "axi_protocol_convert_0/M_AXI"
             ]
           },
-          "Conn2": {
+          "Conn1": {
             "interface_ports": [
-              "FIXED_IO",
-              "processing_system7/FIXED_IO"
+              "DDR",
+              "processing_system7/DDR"
             ]
           }
         },
@@ -3075,16 +3075,16 @@
       }
     },
     "interface_nets": {
-      "PS_FIXED_IO": {
-        "interface_ports": [
-          "FIXED_IO",
-          "PS/FIXED_IO"
-        ]
-      },
       "PS_DDR": {
         "interface_ports": [
           "DDR",
           "PS/DDR"
+        ]
+      },
+      "PS_FIXED_IO": {
+        "interface_ports": [
+          "FIXED_IO",
+          "PS/FIXED_IO"
         ]
       }
     },
