@@ -39,8 +39,6 @@ entity topmod is
         --
         adc_dat_a_i     :   in  std_logic_vector(13 downto 0);
         adc_dat_b_i     :   in  std_logic_vector(13 downto 0);
-        adc_sync_o      :   out std_logic;
-        idly_rst_o      :   out std_logic;
         --
         -- DAC data
         --
@@ -171,14 +169,12 @@ end process;
 
 dac_reset_o <= not(aresetn);
 ext_o <= regs(0)(7 downto 0);
-idly_rst_o <= regs(0)(10);
 --
 -- ADC data
 --
 adc(0) <= resize(signed(adc_dat_b_i),16);
 adc(1) <= resize(signed(adc_dat_a_i),16);
 adcReg <= std_logic_vector(adc(1)) & std_logic_vector(adc(0));
-adc_sync_o <= 'Z';
 --
 -- Save ADC data
 --
@@ -215,7 +211,7 @@ begin
         regs <= (others => (others => '0'));
         triggers <= (others => '0');
         mem_bus.m <= INIT_MEM_BUS_MASTER;
-        
+        numSamples <= to_unsigned(1000,numSamples'length);
         
     elsif rising_edge(sysclk(0)) then
         FSM: case(comState) is

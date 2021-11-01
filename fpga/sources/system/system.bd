@@ -7,7 +7,8 @@
       "name": "system",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2020.2"
+      "tool_version": "2020.2",
+      "validated": "true"
     },
     "design_tree": {
       "PS": {
@@ -26,11 +27,67 @@
     "interface_ports": {
       "DDR": {
         "mode": "Master",
-        "vlnv": "xilinx.com:interface:ddrx_rtl:1.0"
+        "vlnv": "xilinx.com:interface:ddrx_rtl:1.0",
+        "parameters": {
+          "AXI_ARBITRATION_SCHEME": {
+            "value": "TDM",
+            "value_src": "default"
+          },
+          "BURST_LENGTH": {
+            "value": "8",
+            "value_src": "default"
+          },
+          "CAN_DEBUG": {
+            "value": "false",
+            "value_src": "default"
+          },
+          "CAS_LATENCY": {
+            "value": "11",
+            "value_src": "default"
+          },
+          "CAS_WRITE_LATENCY": {
+            "value": "11",
+            "value_src": "default"
+          },
+          "CS_ENABLED": {
+            "value": "true",
+            "value_src": "default"
+          },
+          "DATA_MASK_ENABLED": {
+            "value": "true",
+            "value_src": "default"
+          },
+          "DATA_WIDTH": {
+            "value": "8",
+            "value_src": "default"
+          },
+          "MEMORY_TYPE": {
+            "value": "COMPONENTS",
+            "value_src": "default"
+          },
+          "MEM_ADDR_MAP": {
+            "value": "ROW_COLUMN_BANK",
+            "value_src": "default"
+          },
+          "SLOT": {
+            "value": "Single",
+            "value_src": "default"
+          },
+          "TIMEPERIOD_PS": {
+            "value": "1250",
+            "value_src": "default"
+          }
+        }
       },
       "FIXED_IO": {
         "mode": "Master",
-        "vlnv": "xilinx.com:display_processing_system7:fixedio_rtl:1.0"
+        "vlnv": "xilinx.com:display_processing_system7:fixedio_rtl:1.0",
+        "parameters": {
+          "CAN_DEBUG": {
+            "value": "false",
+            "value_src": "default"
+          }
+        }
       }
     },
     "ports": {
@@ -87,32 +144,72 @@
         "type": "data",
         "direction": "I",
         "left": "6",
-        "right": "0"
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
       },
       "adc_dat_a_n_i": {
         "type": "data",
         "direction": "I",
         "left": "6",
-        "right": "0"
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
       },
       "adc_dat_b_p_i": {
         "type": "data",
         "direction": "I",
         "left": "6",
-        "right": "0"
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
       },
       "adc_dat_b_n_i": {
         "type": "data",
         "direction": "I",
         "left": "6",
-        "right": "0"
+        "right": "0",
+        "parameters": {
+          "LAYERED_METADATA": {
+            "value": "undef",
+            "value_src": "default"
+          }
+        }
       },
       "adc_clk_p_i": {
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "CLK_DOMAIN": {
+            "value": "system_adc_clk_p_i",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
             "value": "250000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
           }
         }
       },
@@ -120,8 +217,24 @@
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "CLK_DOMAIN": {
+            "value": "system_adc_clk_n_i",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
             "value": "250000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
           }
         }
       },
@@ -2518,9 +2631,6 @@
           "aresetn": {
             "type": "rst",
             "direction": "I"
-          },
-          "idly_rst_i": {
-            "direction": "I"
           }
         },
         "components": {
@@ -2737,9 +2847,6 @@
                   }
                 }
               },
-              "idly_rst_i": {
-                "direction": "I"
-              },
               "adc_clk_o": {
                 "direction": "O",
                 "left": "2",
@@ -2848,12 +2955,6 @@
               "aresetn",
               "ADC_Data_Input_0/aresetn"
             ]
-          },
-          "idly_rst_i_1": {
-            "ports": [
-              "idly_rst_i",
-              "ADC_Data_Input_0/idly_rst_i"
-            ]
           }
         }
       },
@@ -2871,7 +2972,25 @@
           "sysclk": {
             "direction": "I",
             "left": "2",
-            "right": "0"
+            "right": "0",
+            "parameters": {
+              "PortWidth": {
+                "value": "3",
+                "value_src": "ip_prop"
+              },
+              "FREQ_HZ": {
+                "value": "5e+07:2.5e+08:1.25e+08",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.000:0.000:0.000",
+                "value_src": "ip_prop"
+              },
+              "PortType": {
+                "value": "clk",
+                "value_src": "ip_prop"
+              }
+            }
           },
           "adcclk": {
             "direction": "I",
@@ -2938,12 +3057,6 @@
             "direction": "I",
             "left": "13",
             "right": "0"
-          },
-          "adc_sync_o": {
-            "direction": "O"
-          },
-          "idly_rst_o": {
-            "direction": "O"
           },
           "dac_a_o": {
             "direction": "O",
@@ -3123,7 +3236,6 @@
       },
       "topmod_0_adc_sync_o": {
         "ports": [
-          "topmod_0/adc_sync_o",
           "adc_sync_o"
         ]
       },
@@ -3131,12 +3243,6 @@
         "ports": [
           "PS/FCLK_RESET3_N",
           "ADC_Processing/aresetn"
-        ]
-      },
-      "topmod_0_idly_rst_o": {
-        "ports": [
-          "topmod_0/idly_rst_o",
-          "ADC_Processing/idly_rst_i"
         ]
       }
     },

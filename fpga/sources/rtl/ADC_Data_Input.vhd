@@ -11,9 +11,6 @@ entity ADC_Data_Input is
         --
         -- Input clocks
         --
---        adc_clk_n_i :   in  std_logic;
---        adc_clk_p_i :   in  std_logic;
---        aresetn     :   in  std_logic;
         adc_clk_250     :   in  std_logic;
         adc_clk_125     :   in  std_logic;
         adc_clk_10      :   in  std_logic;
@@ -26,7 +23,6 @@ entity ADC_Data_Input is
         adc_dat_a_p_i   :   in  std_logic_vector(6 downto 0);
         adc_dat_b_n_i   :   in  std_logic_vector(6 downto 0);
         adc_dat_b_p_i   :   in  std_logic_vector(6 downto 0);
-        idly_rst_i      :   in  std_logic;
         --
         -- Output clock and data
         --
@@ -37,20 +33,6 @@ entity ADC_Data_Input is
 end ADC_Data_Input;
 
 architecture Behavioral of ADC_Data_Input is
-
---component ADC_Clocking
---port
--- (-- Clock in ports
---  -- Clock out ports
---  clk_out1          : out    std_logic;
---  clk_out2          : out    std_logic;
---  clk_out3          : out    std_logic;
---  -- Status and control signals
---  resetn            : in     std_logic;
---  clk_in1_p         : in     std_logic;
---  clk_in1_n         : in     std_logic
--- );
---end component;
 
 constant ADC_WIDTH_I    :   natural :=  adc_dat_a_n_i'length;
 constant ADC_WIDTH_O    :   natural :=  14;
@@ -64,14 +46,11 @@ signal adc_dat_a, adc_dat_b :   std_logic_vector(ADC_WIDTH_O - 1 downto 0);
 --
 signal idlyctrl_rst     :   std_logic;
 signal idly_rdy         :   std_logic;
-signal idly_rst_sync    :   std_logic_vector(1 downto 0);
 signal idly_rst, idly_ce, idly_inc    :   std_logic_vector(ADC_WIDTH_O - 1 downto 0);
 
 type t_cnt is array(natural range <>) of std_logic_vector(4 downto 0);
 signal idly_cnt :   t_cnt(ADC_WIDTH_O - 1 downto 0);
 
-
---signal adc_clk_250, adc_clk_125, adc_clk_10 :   std_logic;
 
 begin
 adc_clk_o <= (0 => adc_clk_125, 1 => adc_clk_250, 2 => adc_clk_10);
@@ -104,22 +83,7 @@ port map(
     RST     =>  idlyctrl_rst
 );
 
-trig_sync(adc_clk_125,aresetn,idly_rst_i,idly_rst_sync);
-
-P1: process(adc_clk_125,aresetn) is
-begin
-    if aresetn = '0' then
-        idly_rst <= (others => '1');
-        idly_ce <= (others => '0');
-        idly_inc <= (others => '0');
-    elsif rising_edge(adc_clk_125) then
-        if idly_rst_sync = "01" then
-            idly_rst <= (others => '1');
-        else
-            idly_rst <= (others => '0');
-        end if;
-    end if;
-end process;
+idly_rst <= (others => '0');
 
 IDELAY_GEN: for I in 0 to ADC_WIDTH_I - 1 generate
     IDELAY_A: IDELAYE2
