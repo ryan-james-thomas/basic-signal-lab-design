@@ -22,6 +22,9 @@ if len(sys.argv) < 2:
 elif len(sys.argv) == 2:
     host = sys.argv[1]
     port = 6666
+elif len(sys.argv) >= 3:
+    host = sys.argv[1]
+    port = 6667
 
 lsock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 lsock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR, 1)

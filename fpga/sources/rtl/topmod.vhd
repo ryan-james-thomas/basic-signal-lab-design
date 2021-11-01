@@ -72,6 +72,24 @@ COMPONENT DDS_Output
   );
 END COMPONENT;
 
+component SaveADCData is
+    port(
+        readClk     :   in  std_logic;          --Clock for reading data
+        writeClk    :   in  std_logic;          --Clock for writing data
+        aresetn     :   in  std_logic;          --Asynchronous reset
+        
+        data_i      :   in  std_logic_vector;   --Input data, maximum length of 32 bits
+        valid_i     :   in  std_logic;          --High for one clock cycle when data_i is valid
+        
+        numSamples  :   in  t_mem_addr;         --Number of samples to save
+        trig_i      :   in  std_logic;          --Start trigger
+        
+        bus_m       :   in  t_mem_bus_master;   --Master memory bus
+        bus_s       :   out t_mem_bus_slave     --Slave memory bus
+    );
+end component;
+
+
 --
 -- AXI communication signals
 --
@@ -82,7 +100,8 @@ signal reset                :   std_logic;
 --
 -- Registers
 --
-signal regs :   t_param_reg_array(3 downto 0);
+signal triggers :   t_param_reg;
+signal regs     :   t_param_reg_array(3 downto 0);
 --
 -- ADC data
 --
@@ -93,6 +112,14 @@ signal adcReg   :   t_param_reg;
 --
 signal dds_a, dds_b :   std_logic_vector(15 downto 0);
 signal dac_a, dac_b :   signed(DAC_WIDTH - 1 downto 0);
+--
+-- Memory signals
+--
+signal memData_i        :   t_mem_data;
+signal memDataValid_i   :   std_logic;
+signal mem_bus          :   t_mem_bus;
+signal numSamples       :   t_mem_addr;
+signal memtrig          :   std_logic;
 
 begin
 --
@@ -101,7 +128,7 @@ begin
 pll_hi_o <= '0';
 pll_lo_o <= '1';
 --
--- DAC Outputs
+-- Generate some DDS values
 --
 DDS_OUTPUT_A: DDS_Output
 port map(
@@ -122,12 +149,26 @@ port map(
     m_axis_data_tvalid  =>  open,
     m_axis_data_tdata   =>  dds_b
 );
-
+--
+-- Choose between DC values or the DDS outputs
+--
 dac_a <= resize(signed(regs(1)(15 downto 0)),DAC_WIDTH) when regs(0)(8) = '0' else shift_left(resize(signed(dds_a),DAC_WIDTH),4);
 dac_b <= resize(signed(regs(1)(31 downto 16)),DAC_WIDTH) when regs(0)(9) = '0' else shift_left(resize(signed(dds_b),DAC_WIDTH),4);
+--
+-- This makes sure that the output values are synchronous with the ADC clock,
+-- which is necessary to reduce harmonic content in the output voltages
+--
+DAC_Process: process(adcclk(1),aresetn) is
+begin
+    if aresetn = '0' then
+        dac_a_o <= (others => '1');
+        dac_b_o <= (others => '1');
+    elsif rising_edge(adcclk(1)) then
+        dac_a_o <= not(std_logic_vector(dac_a));
+        dac_b_o <= not(std_logic_vector(dac_b));
+    end if;
+end process;
 
-dac_a_o <= not(std_logic_vector(dac_a));
-dac_b_o <= not(std_logic_vector(dac_b));
 dac_reset_o <= not(aresetn);
 ext_o <= regs(0)(7 downto 0);
 idly_rst_o <= regs(0)(10);
@@ -138,6 +179,24 @@ adc(0) <= resize(signed(adc_dat_b_i),16);
 adc(1) <= resize(signed(adc_dat_a_i),16);
 adcReg <= std_logic_vector(adc(1)) & std_logic_vector(adc(0));
 adc_sync_o <= 'Z';
+--
+-- Save ADC data
+--
+memData_i <= std_logic_vector(adc(1)) & std_logic_vector(adc(0));
+memDataValid_i <= '1';
+memTrig <= triggers(0);
+SaveData: SaveADCData
+port map(
+    readClk     =>  sysclk(0),
+    writeClk    =>  adcclk(1),
+    aresetn     =>  aresetn,
+    data_i      =>  memData_i,
+    valid_i     =>  memDataValid_i,
+    numSamples  =>  numSamples,
+    trig_i      =>  memTrig,
+    bus_m       =>  mem_bus.m,
+    bus_s       =>  mem_bus.s  
+);
 --
 -- AXI communication routing - connects bus objects to std_logic signals
 --
@@ -154,10 +213,14 @@ begin
         reset <= '0';
         bus_s <= INIT_AXI_BUS_SLAVE;
         regs <= (others => (others => '0'));
+        triggers <= (others => '0');
+        mem_bus.m <= INIT_MEM_BUS_MASTER;
+        
         
     elsif rising_edge(sysclk(0)) then
         FSM: case(comState) is
             when idle =>
+                triggers <= (others => '0');
                 reset <= '0';
                 bus_s.resp <= "00";
                 if bus_m.valid(0) = '1' then
@@ -175,17 +238,43 @@ begin
                             -- This issues a reset signal to the memories and writes data to
                             -- the trigger registers
                             --
-                            when X"000000" => rw(bus_m,bus_s,comState,regs(0));  
-                            when X"000004" => rw(bus_m,bus_s,comState,regs(1));
-                            when X"000008" => rw(bus_m,bus_s,comState,regs(2));
-                            when X"00000C" => rw(bus_m,bus_s,comState,regs(3));
-                            when X"000010" => readOnly(bus_m,bus_s,comState,adcReg);
+                            when X"000000" => rw(bus_m,bus_s,comState,triggers);
+                            when X"000004" => rw(bus_m,bus_s,comState,regs(0));  
+                            when X"000008" => rw(bus_m,bus_s,comState,regs(1));
+                            when X"00000C" => rw(bus_m,bus_s,comState,regs(2));
+                            when X"000010" => rw(bus_m,bus_s,comState,regs(3));
+                            when X"000014" => readOnly(bus_m,bus_s,comState,adcReg);
+                            when X"000018" => rw(bus_m,bus_s,comState,numSamples);
+                            when X"00001C" => readOnly(bus_m,bus_s,comState,mem_bus.s.last);
 
                             
                             when others => 
                                 comState <= finishing;
                                 bus_s.resp <= "11";
                         end case;
+                        
+                    --
+                    -- Retrieve data from memory
+                    --
+                    when X"01" =>
+                        if bus_m.valid(1) = '0' then
+                            bus_s.resp <= "11";
+                            comState <= finishing;
+                            mem_bus.m.trig <= '0';
+                            mem_bus.m.status <= idle;
+                        elsif mem_bus.s.valid = '1' then
+                            bus_s.data <= mem_bus.s.data;
+                            comState <= finishing;
+                            bus_s.resp <= "01";
+                            mem_bus.m.status <= idle;
+                            mem_bus.m.trig <= '0';
+                        elsif mem_bus.s.status = idle then
+                            mem_bus.m.addr <= bus_m.addr(MEM_ADDR_WIDTH + 1 downto 2);
+                            mem_bus.m.status <= waiting;
+                            mem_bus.m.trig <= '1';
+                         else
+                            mem_bus.m.trig <= '0';
+                        end if;
                     
                     when others => 
                         comState <= finishing;
